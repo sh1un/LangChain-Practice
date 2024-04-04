@@ -1,20 +1,20 @@
 import os
 
 from dotenv import load_dotenv
-from langchain_community.chat_models.bedrock import BedrockChat
 from langchain_core.messages import HumanMessage
+from langchain_openai import AzureChatOpenAI
 
 load_dotenv()
 
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-AWS_CRED_PROFILE_NAME = os.environ.get("AWS_CRED_PROFILE_NAME")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+AZURE_DEPLOYMENT_NAME = os.environ.get("AZURE_DEPLOYMENT_NAME")
 
-chat = BedrockChat(
-    model_id="anthropic.claude-3-sonnet-20240229-v1:0",
-    model_kwargs={"temperature": 1.0},
-    credentials_profile_name=AWS_CRED_PROFILE_NAME,
+llm = AzureChatOpenAI(
+    azure_deployment=AZURE_DEPLOYMENT_NAME,
+    model_version="0613",
+    api_version="2023-05-15",
 )
 
-messages = [HumanMessage(content="Hello I am shiun")]
+message = HumanMessage(content="Hello I am shiun")
 
-print(chat(messages=messages))
+print(llm([message]))
