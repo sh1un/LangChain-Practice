@@ -1,9 +1,15 @@
 import os
 
 from dotenv import load_dotenv
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain_community.document_loaders.web_base import WebBaseLoader
+from langchain_community.vectorstores.faiss import FAISS
+from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings, OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
@@ -15,6 +21,15 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+prompt_template = ChatPromptTemplate.from_template(
+    """
+    Answer the following question based only on the provided context:
+    <context>{context}</context>
+    
+    Question: {input}
+    """
+)
+
 llm = AzureChatOpenAI(
     azure_deployment=AZURE_DEPLOYMENT_NAME,
     model_version="0613",
@@ -22,9 +37,47 @@ llm = AzureChatOpenAI(
 )
 
 output_parser = StrOutputParser()
-chain = prompt | llm | output_parser
+
+loader = WebBaseLoader(
+    "https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/"
+)
+docs = loader.load()
+
+embeddings = AzureOpenAIEmbeddings(
+    model="text-embedding-3-small", azure_deployment="shiun-text-embedding-3-small"
+)
+
+
+text_splitter = RecursiveCharacterTextSplitter()
+documents = text_splitter.split_documents(docs)
+vector = FAISS.from_documents(documents=documents, embedding=embeddings)
+
+# chain = prompt | llm | output_parser
+
+document_chain = create_stuff_documents_chain(llm=llm, prompt=prompt_template)
+
+
 print(
-    chain.invoke(
-        {"input": "How do I monitor EC2 CPU, Your response is limited to 100 words"}
+    document_chain.invoke(
+        {
+            "input": "Tell me what you see in the web, Your response is limited to 100 words",
+            "context": [
+                Document(page_content="langsmith can let you visualize test results")
+            ],
+        }
+    )
+)
+
+retriever = vector.as_retriever()
+retrieval_chain = create_retrieval_chain(
+    retriever=retriever, combine_docs_chain=document_chain
+)
+
+
+print(
+    retrieval_chain.invoke(
+        {
+            "input": "Tell me what you see in the web, Your response is limited to 100 words",
+        }
     )
 )
