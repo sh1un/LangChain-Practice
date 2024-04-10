@@ -13,7 +13,7 @@ def build_agent(prompt: str):
     azure_deployment_name = os.environ.get("AZURE_DEPLOYMENT_NAME")
 
     llm = AzureChatOpenAI(
-        azure_deployment=azure_deployment_name,
+        azure_deployment=azure_deployment_name, # change different model here!
         model_version="0613",
         api_version="2023-05-15",
     )
