@@ -1,4 +1,4 @@
-from langchain_community.callbacks.manager import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 
 from hugo_agent import build_agent
 

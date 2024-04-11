@@ -1,55 +1,64 @@
-def realize_the_problem(scenario: str) -> str:
-    """\
-    Useful for when you need to realize the problem.
-
-    goal: realize the problem
-
-    Output: Realize the problem Successfully
+def get_customer_messages(scenario: str) -> str:
     """
-
-    problem = "Hi"
-    ...
-    ...
-
-    return f"Realize the problem Successfully {problem}"
-
-def find_solutions() -> str:
-    """\
-    Useful for when you need to find solutions to the problem.
-
-    goal: find solutions to the problem
-
-    Output: Find solutions to the problem Successfully
+    Useful for receiving the content from customer. It might be the first time or the several times because of the rethinking.
+    Goal: Get the content from the customer.
+    Output:
+       - the categorized content from customer.
+       - if the customer's message is not clear, return the
+    "ask_for_more_information".
     """
+    return "Get the content from the customer"
 
-    return "Find solutions to the problem Successfully"
 
-def categorize_the_problem() -> str:
-    """\
-    Useful for when you need to categorize the problem.
-
-    goal: categorize the problem
-
-    Output: Categorize the problem Successfully
+def check_knowledge_base() -> str:
     """
-    
-    return """\
-Categorize the problem Successfully
-
-The problem is categorized as a problem with the EC2 instance.
+    Useful for finding the solution for the customer's problem. Here, we might compare the customer's problem with the knowledge base.
+    Goal: Check the solution for the customer's problem related to the knowledge base or not.
+    Output:
+        - If the solution is found, return "give_solution".
+        - If the solution is not found, return "ask_for_more_information".
     """
+    return "Check the solution for the customer's problem related to the knowledge base or not"
 
-def report_the_problem() -> str:
-    """\
-    Useful for when you need to report the problem.
 
-    goal: report the problem
-
-    Output: Report the problem Successfully
+def ask_for_more_information() -> str:
     """
-
-    return """\
-        Report the problem Successfully
-
-        The problem has been solved successfully.
+    Useful for asking for more information from the customer.
+    Goal: Ask for more information from the customer.
+    Output: Ask for more information from the customer.
     """
+    return "Ask for more information from the customer"
+
+
+def give_solution() -> str:
+    """
+    Useful for providing solutions to the customer.
+    Goal: Provide solutions to the customer.
+    Output:
+        - If the customer is satisfied with the answer, return "open_ticket".
+        - If the customer is not satisfied, return "rethink_solution".
+
+    """
+    return "Provide solutions to the customer"
+
+
+def rethink_solution() -> str:
+    """
+    Useful for rethinking the solution.
+    Goal: Rethink the solution.
+    Output:
+        - If the customer is satisfied with the answer, return "open_ticket".
+        - If the customer is not satisfied, return "rethink_solution".
+        - If the rethinking limit is reached, return "escalate_to_tam".
+    """
+    return "Rethink the solution"
+
+
+def open_ticket() -> str:
+    """
+    Useful for opening a ticket.
+    Goal: Open a ticket.
+    Output:
+        - If the ticket is submitted successfully, return "submit_ticket".
+    """
+    return "Open a ticket successfully"
