@@ -1,12 +1,24 @@
+RETHINK_LIMIT = 0
+
+
 def get_customer_messages(scenario: str) -> str:
     """
     Useful for receiving the content from customer. It might be the first time or the several times because of the rethinking.
+    and your rethink limit times is 5
     Goal: Get the content from the customer.
     Output:
-       - the categorized content from customer.
-       - if the customer's message is not clear, return the
-    "ask_for_more_information".
+    - the categorized content from customer.
+    - if the customer's message is not clear, return the "ask_for_more_information".
     """
+    global RETHINK_LIMIT  # Declare the global variable
+
+    # if invoke this function, plus 1 to the RETHINK_LIMIT
+    RETHINK_LIMIT += 1  # Update the global variable
+    print(f"Rethink limit: {RETHINK_LIMIT}")
+
+    if RETHINK_LIMIT == 5:
+        return ask_for_more_information()
+
     return "Get the content from the customer"
 
 
@@ -55,10 +67,28 @@ def rethink_solution() -> str:
 
 
 def open_ticket() -> str:
-    """
-    Useful for opening a ticket.
-    Goal: Open a ticket.
+    """\
+    Useful for opening the ticket for the customer's problem.
+
+    Goal: Open the ticket for the customer's problem.
+
     Output:
-        - If the ticket is submitted successfully, return "submit_ticket".
+        - If the ticket is submitted, return the "ticket_submitted".
+        - If the ticket is not submitted, return the "rethink_solution".
     """
-    return "Open a ticket successfully"
+
+    try:
+        ...
+        send_mock_ticket_to_customer()  # API call
+
+    except Exception as e:
+        return f"error occurred, the error is {e}."
+
+
+def send_mock_ticket_to_customer():
+    """
+    Useful for sending the ticket to the customer.
+    Goal: Send the ticket to the customer.
+    Output: Send the ticket to the customer.
+    """
+    return {"ticket_submitted": True}
