@@ -38,15 +38,21 @@ if __name__ == "__main__":
         model="text-embedding-3-small", azure_deployment="shiun-text-embedding-3-small"
     )
     pinecone_index = Pinecone.from_existing_index(index_name, embeddings)
-    docsearch = PineconeVectorStore.from_documents(
-        texts, embedding=embeddings, index_name=index_name
+
+    # Commented out to embed more data to the Pinecone index
+    # docsearch = PineconeVectorStore.from_documents(
+    #     texts, embedding=embeddings, index_name=index_name
+    # )
+
+    new_docsearch = PineconeVectorStore.from_existing_index(
+        index_name=index_name, embedding=embeddings
     )
 
     # RetrievalQA
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=docsearch.as_retriever(),
+        retriever=new_docsearch.as_retriever(),
         return_source_documents=True,
     )
     query = "What is a vector db? Give me a 15 word answer for a beginner."
