@@ -1,21 +1,17 @@
-import os
 from pathlib import Path
 
-import pinecone
 from dotenv import load_dotenv
 from langchain.document_loaders.text import TextLoader
-from langchain.embeddings.azure_openai import AzureOpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores.pinecone import Pinecone
+from langchain_openai.embeddings.azure import AzureOpenAIEmbeddings
+from langchain_pinecone import PineconeVectorStore
 
 # Variables
-load_dotenv()
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
+load_dotenv(override=True)
 FILE_PATH = Path("C:/GitHub/LangChain-Practice/mediumblog.txt")
 
 # Pinecone
-pc = Pinecone(api_key=PINECONE_API_KEY)
-pc.create_index("mediumblog-index", metric="cosine", shards=1, dimension=768)
 index_name = "mediumblog-index"
 
 if __name__ == "__main__":
@@ -31,4 +27,6 @@ if __name__ == "__main__":
         model="text-embedding-3-small", azure_deployment="shiun-text-embedding-3-small"
     )
     pinecone_index = Pinecone.from_existing_index(index_name, embeddings)
-    docsearch = pinecone_index.from_documents(texts, embedding=embeddings)
+    docsearch = PineconeVectorStore.from_documents(
+        texts, embedding=embeddings, index_name=index_name
+    )
