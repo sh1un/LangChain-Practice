@@ -1,5 +1,7 @@
 import os
+from typing import Any, Dict, List
 
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain_openai.chat_models.azure import AzureChatOpenAI
 from langchain_openai.embeddings.azure import AzureOpenAIEmbeddings
@@ -23,19 +25,22 @@ embeddings = AzureOpenAIEmbeddings(
 )
 
 
-def run_llm(query: str) -> any:
+def run_llm(query: str, chat_history: List[Dict[str, Any]] = []) -> Any:
     docsearch = PineconeVectorStore.from_existing_index(
         index_name=index_name, embedding=embeddings
     )
 
-    qa = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
-        retriever=docsearch.as_retriever(),
-        return_source_documents=True,
+    # qa = RetrievalQA.from_chain_type(
+    #     llm=llm,
+    #     chain_type="stuff",
+    #     retriever=docsearch.as_retriever(),
+    #     return_source_documents=True,
+    # )
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=llm, retriever=docsearch.as_retriever(), return_source_documents=True
     )
 
-    return qa.invoke({"query": query})
+    return qa.invoke({"question": query, "chat_history": chat_history})
 
 
 if __name__ == "__main__":
